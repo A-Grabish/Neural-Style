@@ -76,6 +76,9 @@ parser.add_argument("--num_iter", dest="num_iter", default=10, type=int,
 parser.add_argument("--model", default="vgg16", type=str,
                     help="Choices are 'vgg16' and 'vgg19'")
 
+parser.add_argument("--model_select", default="zero", type=str,
+                    help="Choices are 'zero' through 'n'")
+
 parser.add_argument("--content_loss_type", default=0, type=int,
                     help='Can be one of 0, 1 or 2. Readme contains the required information of each mode.')
 
@@ -466,12 +469,59 @@ def total_variation_loss(x):
         b = K.square(x[:, :img_width - 1, :img_height - 1, :] - x[:, :img_width - 1, 1:, :])
     return K.sum(K.pow(a + b, 1.25))
 
-if args.model == "vgg19":
-    feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3', 'conv3_4',
-                      'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4', 'conv5_1', 'conv5_2', 'conv5_3', 'conv5_4']
-else:
-    feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3',
-                      'conv4_1', 'conv4_2', 'conv4_3', 'conv5_1', 'conv5_2', 'conv5_3']
+if args.model_select == "zero":
+    if args.model == "vgg19":
+        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3', 'conv3_4',
+                          'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4', 'conv5_1', 'conv5_2', 'conv5_3', 'conv5_4']
+    else:
+        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3',
+                        'conv4_1', 'conv4_2', 'conv4_3', 'conv5_1', 'conv5_2', 'conv5_3']
+
+elif args.model_select == "five":
+    if args.model == "vgg19":
+        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3', 'conv3_4',
+                      'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4']
+    else:
+        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3',
+                        'conv4_1', 'conv4_2', 'conv4_3']
+
+elif args.model_select == "one":
+    if args.model == "vgg19":
+        feature_layers = ['conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3', 'conv3_4',
+                        'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4', 'conv5_1', 'conv5_2', 'conv5_3', 'conv5_4']
+    else:
+        feature_layers = ['conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3',
+                        'conv4_1', 'conv4_2', 'conv4_3', 'conv5_1', 'conv5_2', 'conv5_3']
+
+elif args.model_select == "two":
+    if args.model == "vgg19":
+        feature_layers = ['conv1_1', 'conv1_2', 'conv3_1', 'conv3_2', 'conv3_3', 'conv3_4',
+                        'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4', 'conv5_1', 'conv5_2', 'conv5_3', 'conv5_4']
+    else:
+        feature_layers = ['conv1_1', 'conv1_2', 'conv3_1', 'conv3_2', 'conv3_3',
+                        'conv4_1', 'conv4_2', 'conv4_3', 'conv5_1', 'conv5_2', 'conv5_3']
+
+elif args.model_select == "three":
+    if args.model == "vgg19":
+        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2',
+                        'conv4_1', 'conv4_2', 'conv4_3', 'conv4_4', 'conv5_1', 'conv5_2', 'conv5_3', 'conv5_4']
+    else:
+        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2',
+                        'conv4_1', 'conv4_2', 'conv4_3', 'conv5_1', 'conv5_2', 'conv5_3']
+
+elif args.model_select == "four":
+    if args.model == "vgg19":
+        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3', 'conv3_4',
+                         'conv5_1', 'conv5_2', 'conv5_3', 'conv5_4']
+    else:
+        feature_layers = ['conv1_1', 'conv1_2', 'conv2_1', 'conv2_2', 'conv3_1', 'conv3_2', 'conv3_3',
+                         'conv5_1', 'conv5_2', 'conv5_3']
+
+
+
+
+
+
 
 # combine these loss functions into a single scalar
 loss = K.variable(0.)
